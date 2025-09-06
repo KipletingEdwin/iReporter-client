@@ -6,3 +6,13 @@
 .nav img{
     height: 40px;
 }
+
+.nav ul{
+    display: flex;
+    gap: 2rem;
+}
+
+.nav ul li{
+    list-style: none;
+    font-size: 25px;
+}
