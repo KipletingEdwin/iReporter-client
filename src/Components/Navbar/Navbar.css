@@ -1,0 +1,8 @@
+.nav{
+    display: flex;
+    justify-content: space-between;
+}
+
+.nav img{
+    height: 40px;
+}
