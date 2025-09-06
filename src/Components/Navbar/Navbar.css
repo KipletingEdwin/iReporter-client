@@ -10,9 +10,11 @@
 .nav ul{
     display: flex;
     gap: 2rem;
+
 }
 
 .nav ul li{
     list-style: none;
     font-size: 25px;
+    font-weight: 600;
 }
