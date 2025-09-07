@@ -1,0 +1,40 @@
+.hero{
+    /* background-color: red; */
+    margin: 30px 0px;
+}
+
+.hero-details{
+    /* background-color: green; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+
+.hero-details h2{
+    font-size: 65px;
+    margin-top: 20px;
+    /* background-color: yellow; */
+}
+
+.hero-details p{
+    font-size: 20px;
+    font-weight: 600;
+    padding: 30px 10px;
+    /* background-color: orange; */
+}
+
+.hero-button{
+    display: inline-block;
+    padding: 14px 28px;
+    background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
