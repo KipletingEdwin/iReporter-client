@@ -56,6 +56,8 @@
 .works-details{
     display: flex;
     gap: 5rem;
+    align-items: center;
+    justify-content: center;
 }
 
 .works-sections{
@@ -63,7 +65,12 @@
     padding: 20px;
     width: 20%;
 }
+.works-sections h3{
+    padding: 10px 0px;
+    font-weight: 700;
+}
 
 .faUser,.faClock, .faFile{
     font-size: 50px;
+    padding: 10px 0px;
 }
