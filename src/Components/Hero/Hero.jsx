@@ -16,20 +16,20 @@ const Hero = () => {
             <h2>How it Works</h2>
             <div className='works-details'>
 
-                <div className="register">
-                <FontAwesomeIcon icon={faUser} />
+                <div className="works-sections">
+                <FontAwesomeIcon icon={faUser} className='faUser' />
                     <h3>Register</h3>
                     <p>Create an account to get started</p>
                 </div>
 
-                <div className="register">
-                <FontAwesomeIcon icon={faFile} />
+                <div className="works-sections">
+                <FontAwesomeIcon icon={faFile} className='faFile' />
                     <h3>Report</h3>
                     <p>Submit a report about an incident</p>
                 </div>
 
-                <div className="register">
-                <FontAwesomeIcon icon={faClock} />
+                <div className="works-sections">
+                <FontAwesomeIcon icon={faClock}  className='faClock'/>
                     <h3>Follow Up</h3>
                     <p>Track the progess of your report </p>
                 </div>

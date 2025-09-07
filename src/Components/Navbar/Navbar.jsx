@@ -8,9 +8,9 @@ const Navbar = () => {
       <img src={iReporter} alt='iReporter' />
 
       <ul>
-        <li>Home</li>
-        <li>About</li>
-        <li>Contact</li>
+        <li><a href='/'></a>Home</li>
+        <li><a href='/'></a>About</li>
+        <li><a href='/'></a>Contact</li>
       </ul>
     </div>
   )

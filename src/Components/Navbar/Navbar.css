@@ -19,5 +19,6 @@
 .nav ul li{
     list-style: none;
     font-size: 25px;
+    cursor: pointer;
 
 }

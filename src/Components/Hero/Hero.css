@@ -34,7 +34,36 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
-
     transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    /* box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3); */
+}
+
+/* WORKS */
+
+.works{
+    /* background-color: red; */
+    margin: 6rem 0rem;
+    padding: 20px 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+}
+
+.works h2{
+    font-size: 45px;
+}
+.works-details{
+    display: flex;
+    gap: 5rem;
+}
+
+.works-sections{
+    /* background-color: green; */
+    padding: 20px;
+    width: 20%;
+}
+
+.faUser,.faClock, .faFile{
+    font-size: 50px;
 }
