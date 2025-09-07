@@ -1,6 +1,8 @@
 .nav{
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    margin: 20px 170px;
 }
 
 .nav img{
@@ -9,12 +11,13 @@
 
 .nav ul{
     display: flex;
-    gap: 2rem;
+    align-items: center;
+    gap: 60px;
 
 }
 
 .nav ul li{
     list-style: none;
     font-size: 25px;
-    font-weight: 600;
+
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import iReporter from '../../assets/navbar/ireporter.png'
+import iReporter from '../../assets/navbar/iReporter.png'
 import './Navbar.css'
 
 const Navbar = () => {
@@ -10,9 +10,7 @@ const Navbar = () => {
       <ul>
         <li>Home</li>
         <li>About</li>
-        <li>Services</li>
-        <li>Projects</li>
-        <li>Contacts</li>
+        <li>Contact</li>
       </ul>
     </div>
   )
