@@ -17,7 +17,7 @@ const Hero = () => {
             <div className='works-details'>
 
                 <div className="works-sections">
-                <FontAwesomeIcon icon={faUser} className='faUser' />
+                <FontAwesomeIcon icon={faUser} className='faUser'/>
                     <h3>Register</h3>
                     <p>Create an account to get started</p>
                 </div>
@@ -29,7 +29,7 @@ const Hero = () => {
                 </div>
 
                 <div className="works-sections">
-                <FontAwesomeIcon icon={faClock}  className='faClock'/>
+                <FontAwesomeIcon icon={faClock}  className='faClock' />
                     <h3>Follow Up</h3>
                     <p>Track the progess of your report </p>
                 </div>
