@@ -2,8 +2,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 20px 170px;
-    box-shadow: inset;
+    padding: 20px 170px;
     /* background-color: green; */
 }
 
