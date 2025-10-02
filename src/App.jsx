@@ -14,31 +14,45 @@
 // }
 // export default App;
 // src/App.jsx
+// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Hero from "./Components/Hero/Hero"
-import Navbar from "./Components/Navbar/Navbar";
-import SubmitReport from "./Components/SubmitReport/SubmitReport";
+
+// Import pages
+import Hero from "./Components/Hero/Hero.jsx";
+import SubmitReport from "./Components/SubmitReport/SubmitReport.jsx";
+//import MyReports from "./pages/MyReports.jsx";
+//import ReportDetails from "./pages/ReportDetails.jsx";
+//import Profile from "./pages/Profile.jsx";
+
+// Layout with Navbar
+import Layout from "./Components/Layout/Layout.jsx";
 
 function App() {
   return (
-    
     <Router>
-              <Navbar />
-      <Routes>
+      <Layout>
+        <Routes>
+          {/* Dashboard / Home */}
+          <Route path="/" element={<Hero />} />
 
-        {/* Dashboard / Home */}
-        <Route path="/" element={<Hero />} />
+          {/* Submit Report page */}
+          <Route path="/submit-report" element={<SubmitReport />} />
 
-        {/* Submit Report page */}
-        <Route path="/submit-report" element={<SubmitReport />} />
+          {/* User reports list */}
+          {/* <Route path="/my-reports" element={<MyReports />} /> */}
 
-        {/* Future pages can be added here, e.g., MyReports */}
-        {/* <Route path="/my-reports" element={<MyReports />} /> */}
-      </Routes>
+          {/* Report details page (dynamic route by ID) */}
+          {/* <Route path="/report/:id" element={<ReportDetails />} /> */}
+
+          {/* Profile page */}
+          {/* <Route path="/profile" element={<Profile />} /> */}
+        </Routes>
+      </Layout>
     </Router>
   );
 }
 
 export default App;
+
 
