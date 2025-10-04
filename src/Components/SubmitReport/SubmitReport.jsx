@@ -1,155 +1,199 @@
 // src/pages/SubmitReport.jsx
-import React from "react";
-import { useForm, Controller } from "react-hook-form";
+import React, { useState } from "react";
 import {
-  Container,
-  Typography,
-  TextField,
-  MenuItem,
-  Button,
   Box,
-  Grid,
+  TextField,
+  Button,
+  Typography,
+  MenuItem,
   Paper,
+  Stack,
 } from "@mui/material";
-//import Navbar from "./Components/Navbar/Navbar";
-
-const categories = ["Corruption", "Red-Flag", "Intervention", "Infrastructure", "Environmental"];
+import { useNavigate } from "react-router-dom";
 
 export default function SubmitReport() {
-  const { handleSubmit, control, reset, formState: { errors } } = useForm({
-    defaultValues: {
+  const navigate = useNavigate();
+
+  // Form state
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    category: "",
+    location: "",
+    evidence: null,
+  });
+
+  const [error, setError] = useState("");
+
+  const categories = [
+    "Corruption",
+    "Red-Flag",
+    "Intervention",
+    "Other",
+  ];
+
+  // Handle text input changes
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // Handle file upload
+  const handleFileChange = (e) => {
+    setFormData({
+      ...formData,
+      evidence: e.target.files[0],
+    });
+  };
+
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Basic validation
+    if (!formData.title || !formData.description || !formData.category) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    // Normally you’d send this to the backend via API call
+    console.log("Submitted data:", formData);
+
+    // Reset form
+    setFormData({
       title: "",
       description: "",
       category: "",
       location: "",
       evidence: null,
-    },
-  });
+    });
 
-  const onSubmit = (data) => {
-    console.log("Form Data:", data);
-    alert("Report submitted successfully!");
-    reset(); // reset form after submission
+    // Navigate back to dashboard
+    navigate("/");
   };
 
   return (
-    <>
-      {/* <Navbar /> */}
-      <Container sx={{ mt: 4 }}>
-        <Paper sx={{ p: 4 }}>
-          <Typography variant="h4" gutterBottom>
-            Submit a New Report
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        mt: 4,
+        px: 2,
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          width: "100%",
+          maxWidth: 600,
+          p: 4,
+          borderRadius: 3,
+        }}
+      >
+        <Typography
+          variant="h5"
+          fontWeight="bold"
+          textAlign="center"
+          mb={3}
+          color="primary"
+        >
+          Submit a New Report
+        </Typography>
+
+        {error && (
+          <Typography color="error" sx={{ mb: 2 }}>
+            {error}
           </Typography>
+        )}
 
-          <Box
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            noValidate
-            sx={{ mt: 2 }}
-          >
-            <Grid container spacing={3}>
-              {/* Title */}
-              <Grid item xs={12}>
-                <Controller
-                  name="title"
-                  control={control}
-                  rules={{ required: "Title is required" }}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Title"
-                      fullWidth
-                      error={!!errors.title}
-                      helperText={errors.title ? errors.title.message : ""}
-                    />
-                  )}
-                />
-              </Grid>
+        <Box component="form" onSubmit={handleSubmit}>
+          <Stack spacing={2}>
+            {/* Title */}
+            <TextField
+              label="Title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+              fullWidth
+            />
 
-              {/* Description */}
-              <Grid item xs={12}>
-                <Controller
-                  name="description"
-                  control={control}
-                  rules={{ required: "Description is required" }}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Description"
-                      multiline
-                      rows={4}
-                      fullWidth
-                      error={!!errors.description}
-                      helperText={errors.description ? errors.description.message : ""}
-                    />
-                  )}
-                />
-              </Grid>
+            {/* Description */}
+            <TextField
+              label="Description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              required
+              fullWidth
+              multiline
+              rows={4}
+            />
 
-              {/* Category */}
-              <Grid item xs={12} md={6}>
-                <Controller
-                  name="category"
-                  control={control}
-                  rules={{ required: "Category is required" }}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      label="Category"
-                      fullWidth
-                      error={!!errors.category}
-                      helperText={errors.category ? errors.category.message : ""}
-                    >
-                      {categories.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  )}
-                />
-              </Grid>
+            {/* Category */}
+            <TextField
+              select
+              label="Category"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+              fullWidth
+            >
+              {categories.map((cat) => (
+                <MenuItem key={cat} value={cat}>
+                  {cat}
+                </MenuItem>
+              ))}
+            </TextField>
 
-              {/* Location */}
-              <Grid item xs={12} md={6}>
-                <Controller
-                  name="location"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField {...field} label="Location (optional)" fullWidth />
-                  )}
-                />
-              </Grid>
+            {/* Location */}
+            <TextField
+              label="Location"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              fullWidth
+            />
 
-              {/* File Upload */}
-              <Grid item xs={12}>
-                <Controller
-                  name="evidence"
-                  control={control}
-                  render={({ field }) => (
-                    <input
-                      type="file"
-                      accept="image/*,application/pdf"
-                      onChange={(e) => field.onChange(e.target.files[0])}
-                    />
-                  )}
-                />
-              </Grid>
+            {/* File upload */}
+            <Button
+              variant="outlined"
+              component="label"
+              sx={{ textTransform: "none" }}
+            >
+              Upload Evidence
+              <input
+                type="file"
+                hidden
+                onChange={handleFileChange}
+                accept="image/*,application/pdf"
+              />
+            </Button>
+            {formData.evidence && (
+              <Typography variant="body2" color="text.secondary">
+                {formData.evidence.name}
+              </Typography>
+            )}
 
-              {/* Buttons */}
-              <Grid item xs={12} sx={{ display: "flex", gap: 2 }}>
-                <Button variant="outlined" onClick={() => reset()}>
-                  Cancel
-                </Button>
-                <Button type="submit" variant="contained" color="primary">
-                  Submit Report
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-        </Paper>
-      </Container>
-    </>
+            {/* Action buttons */}
+            <Stack direction="row" spacing={2} justifyContent="center" mt={2}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => navigate("/")}
+              >
+                Cancel
+              </Button>
+              <Button variant="contained" color="primary" type="submit">
+                Submit Report
+              </Button>
+            </Stack>
+          </Stack>
+        </Box>
+      </Paper>
+    </Box>
   );
 }

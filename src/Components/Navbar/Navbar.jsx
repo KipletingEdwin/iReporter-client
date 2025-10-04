@@ -1,24 +1,3 @@
-// import React from 'react'
-// import iReporter from '../../assets/navbar/iReporter.png'
-// import './Navbar.css'
-
-// const Navbar = () => {
-//   return (
-//     <div className='nav'>
-//       <img src={iReporter} alt='iReporter' />
-//       <ul>
-//         <li><a href='/'>Home</a></li>
-//         <li><a href='/about'>About</a></li>
-//         <li><a href='/contact'>Contact</a></li>
-//       </ul>
-//     </div>
-//   )
-// }
-
-// export default Navbar
-
-
-// src/components/Navbar.jsx
 import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -30,8 +9,13 @@ import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import { Link } from "react-router-dom";
 
-const pages = ["Home", "My Reports", "Submit Report"];
+const pages = [
+  { name: "Home", path: "/" },
+  { name: "My Reports", path: "/my-reports" },
+  { name: "Submit Report", path: "/submit-report" },
+];
 
 const Navbar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -48,15 +32,33 @@ const Navbar = () => {
     <AppBar position="static">
       <Toolbar>
         {/* App Name / Logo */}
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: "none", color: "inherit", fontWeight: "bold", letterSpacing: 1 }} >
           iReporter
         </Typography>
 
         {/* Desktop Navigation */}
         <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
           {pages.map((page) => (
-            <Button key={page} color="inherit">
-              {page}
+            <Button
+              key={page.name}
+              component={Link}
+              to={page.path}
+              color="inherit"
+              sx={{
+                textTransform: "none",
+                fontWeight: 500,
+                fontSize: 17,
+                color: "inherit",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  color: "#fff",
+                },
+                "&.active": {
+                  borderBottom: "2px solid #fff",
+                },
+              }}
+            >
+              {page.name}
             </Button>
           ))}
           <IconButton color="inherit">
@@ -66,11 +68,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         <Box sx={{ display: { xs: "flex", md: "none" } }}>
-          <IconButton
-            size="large"
-            color="inherit"
-            onClick={handleOpenNavMenu}
-          >
+          <IconButton size="large" color="inherit" onClick={handleOpenNavMenu}>
             <MenuIcon />
           </IconButton>
           <Menu
