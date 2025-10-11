@@ -1,56 +1,11 @@
-// import React from 'react'
-// import './Hero.css'
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faUser,faClock,faFile } from "@fortawesome/free-solid-svg-icons";
 
-// const Hero = () => {
-//   return (
-//     <div className='hero'>
-//         <div className='hero-details'>
-//         <h2>Report an Incident</h2>
-//         <p>Be the voice of change and report incidents in the community</p>
-//         <button className='hero-button'>Report Now</button>
-//         </div>
-
-//         <div className='works'>
-//             <h2>How it Works</h2>
-//             <div className='works-details'>
-
-//                 <div className="works-sections">
-//                 <FontAwesomeIcon icon={faUser} className='faUser'/>
-//                     <h3>Register</h3>
-//                     <p>Create an account to get started</p>
-//                 </div>
-
-//                 <div className="works-sections">
-//                 <FontAwesomeIcon icon={faFile} className='faFile' />
-//                     <h3>Report</h3>
-//                     <p>Submit a report about an incident</p>
-//                 </div>
-
-//                 <div className="works-sections">
-//                 <FontAwesomeIcon icon={faClock}  className='faClock' />
-//                     <h3>Follow Up</h3>
-//                     <p>Track the progess of your report </p>
-//                 </div>
-//             </div>
-//         </div>
-//     </div>
-
-    
-//   )
-// }
-
-// export default Hero
-
-
-// src/pages/Hero.jsx
 import React from "react";
 import { Container, Typography, Grid, Card, CardContent, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import Navbar from "../Navbar/Navbar.jsx"
+import { Link } from "react-router-dom";
 
 // Mock data for recent reports
 const mockReports = [
@@ -79,7 +34,7 @@ export default function Hero() {
               <CardContent sx={{ textAlign: "center" }}>
                 <ReportProblemIcon color="primary" sx={{ fontSize: 40 }} />
                 <Typography variant="h6" sx={{ mt: 1 }}>New Report</Typography>
-                <Button variant="contained" color="primary" sx={{ mt: 1 }}>Submit Report</Button>
+                <Button variant="contained" color="primary" sx={{ mt: 1 }} component={Link} to="/submit-report" >Submit Report</Button>
               </CardContent>
             </Card>
           </Grid>
