@@ -1,15 +1,31 @@
-import React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Button from "@mui/material/Button";
+// src/components/Navbar/Navbar.jsx
+import React, { useState, useEffect } from "react";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+  Tooltip,
+  Avatar,
+  Badge,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Divider,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import { Link } from "react-router-dom";
+import LogoutIcon from "@mui/icons-material/Logout";
+import SettingsIcon from "@mui/icons-material/Settings";
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const pages = [
   { name: "Home", path: "/" },
@@ -18,20 +34,114 @@ const pages = [
 ];
 
 const Navbar = () => {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  // Fetch pending report count dynamically
+  useEffect(() => {
+    const fetchPendingReports = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        const response = await axios.get("http://localhost:3000/reports", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const pending = response.data.filter((r) => r.status === "Pending");
+        setPendingCount(pending.length);
+      } catch (err) {
+        console.error("Failed to fetch reports count:", err);
+      }
+    };
+    fetchPendingReports();
+  }, []);
+
+  // Profile menu handlers
+  const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
+  const handleCloseUserMenu = () => setAnchorElUser(null);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+    handleCloseUserMenu();
   };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  // Mobile drawer
+  const toggleDrawer = () => setMobileOpen(!mobileOpen);
+
+  const drawer = (
+    <Box sx={{ width: 250 }} onClick={toggleDrawer}>
+      <Typography variant="h6" sx={{ m: 2, fontWeight: "bold" }}>
+        iReporter
+      </Typography>
+      <Divider />
+      <List>
+        {pages.map((page) => (
+          <ListItem
+            button
+            key={page.name}
+            component={Link}
+            to={page.path}
+            selected={location.pathname === page.path}
+          >
+            {page.name === "My Reports" && pendingCount > 0 ? (
+              <Badge
+                badgeContent={pendingCount}
+                color="error"
+                sx={{ mr: 2 }}
+              >
+                <ListItemText primary={page.name} />
+              </Badge>
+            ) : (
+              <ListItemText primary={page.name} />
+            )}
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <List>
+        <ListItem button onClick={() => navigate("/profile")}>
+          <ListItemIcon>
+            <AccountCircle />
+          </ListItemIcon>
+          <ListItemText primary="Profile" />
+        </ListItem>
+        <ListItem button onClick={handleLogout}>
+          <ListItemIcon>
+            <LogoutIcon />
+          </ListItemIcon>
+          <ListItemText primary="Logout" />
+        </ListItem>
+      </List>
+    </Box>
+  );
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      elevation={6}
+      sx={{
+        backgroundColor: "#1976d2",
+        px: 2,
+        py: 0.5,
+        transition: "0.3s ease-in-out",
+      }}
+    >
       <Toolbar>
-        {/* App Name / Logo */}
+        {/* Mobile menu */}
+        <IconButton
+          color="inherit"
+          edge="start"
+          sx={{ mr: 2, display: { md: "none" } }}
+          onClick={toggleDrawer}
+        >
+          <MenuIcon />
+        </IconButton>
+
+        {/* App Logo / Name */}
         <Typography
           variant="h6"
           component={Link}
@@ -47,8 +157,8 @@ const Navbar = () => {
           iReporter
         </Typography>
 
-        {/* Desktop Navigation */}
-        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
+        {/* Desktop navigation */}
+        <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
           {pages.map((page) => (
             <Button
               key={page.name}
@@ -56,65 +166,55 @@ const Navbar = () => {
               to={page.path}
               color="inherit"
               sx={{
+                mx: 1,
                 textTransform: "none",
-                fontWeight: 500,
-                fontSize: 17,
+                fontWeight: location.pathname === page.path ? "bold" : 500,
+                fontSize: 16,
+                borderBottom:
+                  location.pathname === page.path ? "2px solid #fff" : "none",
                 "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  color: "#fff",
-                },
-                "&.active": {
-                  borderBottom: "2px solid #fff",
+                  backgroundColor: "rgba(255,255,255,0.1)",
                 },
               }}
             >
-              {page.name}
+              {page.name === "My Reports" && pendingCount > 0 ? (
+                <Badge badgeContent={pendingCount} color="error">
+                  {page.name}
+                </Badge>
+              ) : (
+                page.name
+              )}
             </Button>
           ))}
-          {/* Desktop Profile Link */}
-          <IconButton
-            color="inherit"
-            component={Link}
-            to="/profile"
-            sx={{ ml: 1 }}
-          >
-            <AccountCircle />
-          </IconButton>
-        </Box>
 
-        {/* Mobile Navigation */}
-        <Box sx={{ display: { xs: "flex", md: "none" } }}>
-          <IconButton
-            size="large"
-            color="inherit"
-            onClick={handleOpenNavMenu}
-          >
-            <MenuIcon />
-          </IconButton>
+          {/* Profile dropdown */}
+          <Tooltip title="Account settings">
+            <IconButton onClick={handleOpenUserMenu} sx={{ ml: 2 }}>
+              <Avatar sx={{ bgcolor: "#fff", color: "#1976d2" }}>
+                <AccountCircle />
+              </Avatar>
+            </IconButton>
+          </Tooltip>
           <Menu
-            anchorEl={anchorElNav}
-            open={Boolean(anchorElNav)}
-            onClose={handleCloseNavMenu}
+            anchorEl={anchorElUser}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
           >
-            {pages.map((page) => (
-              <MenuItem
-                key={page.name}
-                component={Link}
-                to={page.path}
-                onClick={handleCloseNavMenu}
-              >
-                {page.name}
-              </MenuItem>
-            ))}
-            <MenuItem
-              component={Link}
-              to="/profile"
-              onClick={handleCloseNavMenu}
-            >
-              <AccountCircle sx={{ mr: 1 }} /> Profile
+            <MenuItem onClick={() => navigate("/profile")}>
+              <SettingsIcon sx={{ mr: 1 }} /> Profile
+            </MenuItem>
+            <MenuItem onClick={handleLogout}>
+              <LogoutIcon sx={{ mr: 1 }} /> Logout
             </MenuItem>
           </Menu>
         </Box>
+
+        {/* Mobile drawer */}
+        <Drawer anchor="left" open={mobileOpen} onClose={toggleDrawer}>
+          {drawer}
+        </Drawer>
       </Toolbar>
     </AppBar>
   );
