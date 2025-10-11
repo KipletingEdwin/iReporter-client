@@ -32,7 +32,18 @@ const Navbar = () => {
     <AppBar position="static">
       <Toolbar>
         {/* App Name / Logo */}
-        <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: "none", color: "inherit", fontWeight: "bold", letterSpacing: 1 }} >
+        <Typography
+          variant="h6"
+          component={Link}
+          to="/"
+          sx={{
+            flexGrow: 1,
+            textDecoration: "none",
+            color: "inherit",
+            fontWeight: "bold",
+            letterSpacing: 1,
+          }}
+        >
           iReporter
         </Typography>
 
@@ -48,7 +59,6 @@ const Navbar = () => {
                 textTransform: "none",
                 fontWeight: 500,
                 fontSize: 17,
-                color: "inherit",
                 "&:hover": {
                   backgroundColor: "rgba(255, 255, 255, 0.1)",
                   color: "#fff",
@@ -61,14 +71,24 @@ const Navbar = () => {
               {page.name}
             </Button>
           ))}
-          <IconButton color="inherit">
+          {/* Desktop Profile Link */}
+          <IconButton
+            color="inherit"
+            component={Link}
+            to="/profile"
+            sx={{ ml: 1 }}
+          >
             <AccountCircle />
           </IconButton>
         </Box>
 
         {/* Mobile Navigation */}
         <Box sx={{ display: { xs: "flex", md: "none" } }}>
-          <IconButton size="large" color="inherit" onClick={handleOpenNavMenu}>
+          <IconButton
+            size="large"
+            color="inherit"
+            onClick={handleOpenNavMenu}
+          >
             <MenuIcon />
           </IconButton>
           <Menu
@@ -77,11 +97,20 @@ const Navbar = () => {
             onClose={handleCloseNavMenu}
           >
             {pages.map((page) => (
-              <MenuItem key={page} onClick={handleCloseNavMenu}>
-                {page}
+              <MenuItem
+                key={page.name}
+                component={Link}
+                to={page.path}
+                onClick={handleCloseNavMenu}
+              >
+                {page.name}
               </MenuItem>
             ))}
-            <MenuItem onClick={handleCloseNavMenu}>
+            <MenuItem
+              component={Link}
+              to="/profile"
+              onClick={handleCloseNavMenu}
+            >
               <AccountCircle sx={{ mr: 1 }} /> Profile
             </MenuItem>
           </Menu>
