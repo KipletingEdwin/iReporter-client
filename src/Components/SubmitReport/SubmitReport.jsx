@@ -1,4 +1,3 @@
-// src/pages/SubmitReport.jsx
 import React, { useState } from "react";
 import {
   Box,
@@ -10,11 +9,11 @@ import {
   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function SubmitReport() {
   const navigate = useNavigate();
 
-  // Form state
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -24,172 +23,94 @@ export default function SubmitReport() {
   });
 
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const categories = [
-    "Corruption",
-    "Red-Flag",
-    "Intervention",
-    "Other",
-  ];
+  const categories = ["Corruption", "Red-Flag", "Intervention", "Other"];
 
-  // Handle text input changes
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle file upload
   const handleFileChange = (e) => {
-    setFormData({
-      ...formData,
-      evidence: e.target.files[0],
-    });
+    setFormData({ ...formData, evidence: e.target.files[0] });
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
 
-    // Basic validation
     if (!formData.title || !formData.description || !formData.category) {
       setError("Please fill in all required fields.");
       return;
     }
 
-    // Normally you’d send this to the backend via API call
-    console.log("Submitted data:", formData);
+    try {
+      const token = localStorage.getItem("token"); // JWT from login
+      const data = new FormData();
+      data.append("title", formData.title);
+      data.append("description", formData.description);
+      data.append("category", formData.category);
+      data.append("location", formData.location);
+      if (formData.evidence) {
+        data.append("evidence", formData.evidence);
+      }
 
-    // Reset form
-    setFormData({
-      title: "",
-      description: "",
-      category: "",
-      location: "",
-      evidence: null,
-    });
+      await axios.post("http://localhost:3000/reports", data, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-    // Navigate back to dashboard
-    navigate("/");
+      setSuccess("Report submitted successfully!");
+      setFormData({
+        title: "",
+        description: "",
+        category: "",
+        location: "",
+        evidence: null,
+      });
+
+      setTimeout(() => navigate("/my-reports"), 1500);
+    } catch (err) {
+      console.error("Submit report error:", err);
+      if (err.response && err.response.data && err.response.data.errors) {
+        setError(err.response.data.errors.join(", "));
+      } else {
+        setError("An error occurred while submitting the report.");
+      }
+    }
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        mt: 4,
-        px: 2,
-      }}
-    >
-      <Paper
-        elevation={3}
-        sx={{
-          width: "100%",
-          maxWidth: 600,
-          p: 4,
-          borderRadius: 3,
-        }}
-      >
-        <Typography
-          variant="h5"
-          fontWeight="bold"
-          textAlign="center"
-          mb={3}
-          color="primary"
-        >
+    <Box sx={{ display: "flex", justifyContent: "center", mt: 4, px: 2 }}>
+      <Paper elevation={3} sx={{ width: "100%", maxWidth: 600, p: 4, borderRadius: 3 }}>
+        <Typography variant="h5" fontWeight="bold" textAlign="center" mb={3} color="primary">
           Submit a New Report
         </Typography>
 
-        {error && (
-          <Typography color="error" sx={{ mb: 2 }}>
-            {error}
-          </Typography>
-        )}
+        {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
+        {success && <Typography color="success.main" sx={{ mb: 2 }}>{success}</Typography>}
 
         <Box component="form" onSubmit={handleSubmit}>
           <Stack spacing={2}>
-            {/* Title */}
-            <TextField
-              label="Title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-              fullWidth
-            />
-
-            {/* Description */}
-            <TextField
-              label="Description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-              fullWidth
-              multiline
-              rows={4}
-            />
-
-            {/* Category */}
-            <TextField
-              select
-              label="Category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              fullWidth
-            >
-              {categories.map((cat) => (
-                <MenuItem key={cat} value={cat}>
-                  {cat}
-                </MenuItem>
-              ))}
+            <TextField label="Title" name="title" value={formData.title} onChange={handleChange} required fullWidth />
+            <TextField label="Description" name="description" value={formData.description} onChange={handleChange} required fullWidth multiline rows={4} />
+            <TextField select label="Category" name="category" value={formData.category} onChange={handleChange} required fullWidth>
+              {categories.map((cat) => <MenuItem key={cat} value={cat}>{cat}</MenuItem>)}
             </TextField>
+            <TextField label="Location" name="location" value={formData.location} onChange={handleChange} fullWidth />
 
-            {/* Location */}
-            <TextField
-              label="Location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              fullWidth
-            />
-
-            {/* File upload */}
-            <Button
-              variant="outlined"
-              component="label"
-              sx={{ textTransform: "none" }}
-            >
+            <Button variant="outlined" component="label" sx={{ textTransform: "none" }}>
               Upload Evidence
-              <input
-                type="file"
-                hidden
-                onChange={handleFileChange}
-                accept="image/*,application/pdf"
-              />
+              <input type="file" hidden onChange={handleFileChange} accept="image/*,application/pdf" />
             </Button>
-            {formData.evidence && (
-              <Typography variant="body2" color="text.secondary">
-                {formData.evidence.name}
-              </Typography>
-            )}
+            {formData.evidence && <Typography variant="body2" color="text.secondary">{formData.evidence.name}</Typography>}
 
-            {/* Action buttons */}
             <Stack direction="row" spacing={2} justifyContent="center" mt={2}>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => navigate("/")}
-              >
-                Cancel
-              </Button>
-              <Button variant="contained" color="primary" type="submit">
-                Submit Report
-              </Button>
+              <Button variant="outlined" color="secondary" onClick={() => navigate("/")}>Cancel</Button>
+              <Button variant="contained" color="primary" type="submit">Submit Report</Button>
             </Stack>
           </Stack>
         </Box>

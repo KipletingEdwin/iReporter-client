@@ -1,140 +1,120 @@
 // src/pages/MyReports.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
   Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Button,
-  Chip,
   Stack,
+  Button,
+  CircularProgress,
+  Avatar,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function MyReports() {
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // 🧪 Fake sample reports (replace with API data later)
-  const [reports, setReports] = useState([
-    {
-      id: 1,
-      title: "Illegal Waste Dumping",
-      category: "Red-Flag",
-      status: "Pending",
-      date: "2025-10-01",
-    },
-    {
-      id: 2,
-      title: "Bribery at Customs Office",
-      category: "Corruption",
-      status: "Resolved",
-      date: "2025-09-28",
-    },
-    {
-      id: 3,
-      title: "Broken Streetlight Fix",
-      category: "Intervention",
-      status: "Rejected",
-      date: "2025-09-25",
-    },
-  ]);
-
-  // Handle delete (for now, just removes from local state)
-  const handleDelete = (id) => {
-    setReports((prev) => prev.filter((r) => r.id !== id));
-  };
-
-  // Function to render color-coded status
-  const renderStatusChip = (status) => {
-    const colors = {
-      Pending: "warning",
-      Resolved: "success",
-      Rejected: "error",
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:3000/reports", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setReports(response.data);
+      } catch (err) {
+        console.error("Error fetching reports:", err);
+        setError("Failed to fetch reports. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     };
-    return <Chip label={status} color={colors[status]} size="small" />;
-  };
+
+    fetchReports();
+  }, []);
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", mt: 4, px: 2 }}>
-      <Paper
-        elevation={3}
-        sx={{ width: "100%", maxWidth: 900, p: 3, borderRadius: 3 }}
-      >
-        <Typography
-          variant="h5"
-          fontWeight="bold"
-          textAlign="center"
-          mb={3}
-          color="primary"
-        >
-          My Reports
+    <Box
+      sx={{
+        mt: 4,
+        px: 2,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <Typography variant="h5" fontWeight="bold" mb={3}>
+        My Reports
+      </Typography>
+
+      {error && (
+        <Typography color="error" sx={{ mb: 2 }}>
+          {error}
         </Typography>
+      )}
 
-        {reports.length === 0 ? (
-          <Typography textAlign="center" color="text.secondary">
-            You haven’t submitted any reports yet.
-          </Typography>
-        ) : (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ backgroundColor: "primary.main" }}>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>ID</TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>Title</TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>Category</TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>Status</TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>Date</TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>Actions</TableCell>
-                </TableRow>
-              </TableHead>
+      {reports.length === 0 ? (
+        <Typography>No reports submitted yet.</Typography>
+      ) : (
+        <Stack spacing={2} sx={{ width: "100%", maxWidth: 700 }}>
+          {reports.map((report) => (
+            <Paper key={report.id} sx={{ p: 2, borderRadius: 2, display: "flex", alignItems: "flex-start", gap: 2 }}>
+              {/* Evidence thumbnail */}
+              {report.evidence_url && report.evidence_type.startsWith("image/") ? (
+                <Avatar
+                  variant="rounded"
+                  src={report.evidence_url}
+                  sx={{ width: 60, height: 60 }}
+                />
+              ) : report.evidence_url ? (
+                <Avatar variant="rounded" sx={{ width: 60, height: 60, bgcolor: "grey.300", fontSize: 12 }}>
+                  PDF
+                </Avatar>
+              ) : null}
 
-              <TableBody>
-                {reports.map((report) => (
-                  <TableRow key={report.id} hover>
-                    <TableCell>{report.id}</TableCell>
-                    <TableCell>{report.title}</TableCell>
-                    <TableCell>{report.category}</TableCell>
-                    <TableCell>{renderStatusChip(report.status)}</TableCell>
-                    <TableCell>{report.date}</TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1}>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          color="primary"
-                          onClick={() => navigate(`/report/${report.id}`)}
-                        >
-                          View
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          color="secondary"
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          color="error"
-                          onClick={() => handleDelete(report.id)}
-                        >
-                          Delete
-                        </Button>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </Paper>
+              {/* Report info */}
+              <Box sx={{ flexGrow: 1 }}>
+                <Typography variant="h6">{report.title}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Category: {report.category || "N/A"} | Status: {report.status || "Pending"}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {report.description.length > 80
+                    ? report.description.slice(0, 80) + "..."
+                    : report.description}
+                </Typography>
+                {report.location && (
+                  <Typography variant="body2" color="text.secondary">
+                    Location: {report.location}
+                  </Typography>
+                )}
+              </Box>
+
+              <Stack direction="column" spacing={1}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => navigate(`/reports/${report.id}`)}
+                >
+                  View
+                </Button>
+              </Stack>
+            </Paper>
+          ))}
+        </Stack>
+      )}
     </Box>
   );
 }

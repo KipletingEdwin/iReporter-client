@@ -28,7 +28,7 @@ function App() {
           <Route path="/my-reports" element={<MyReports />} />
 
           {/* Report details page (dynamic route by ID) */}
-          <Route path="/report/:id" element={<ReportDetails />} />
+          <Route path="/reports/:id" element={<ReportDetails />} />
 
           {/* Profile page */}
           <Route path="/profile" element={<Profile />} />
