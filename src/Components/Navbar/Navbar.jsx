@@ -36,6 +36,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ColorModeContext } from "../../theme/ThemeProvider/ThemeProvider";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const pages = [
   { name: "Home", path: "/", icon: <HomeIcon /> },
   { name: "My Reports", path: "/my-reports", icon: <ListAltIcon /> },
@@ -69,7 +71,7 @@ const Navbar = () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) return;
-        const response = await axios.get("http://localhost:3000/reports", {
+        const response = await axios.get(`${API_URL}/reports`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const pending = response.data.filter((r) => r.status === "Pending");
