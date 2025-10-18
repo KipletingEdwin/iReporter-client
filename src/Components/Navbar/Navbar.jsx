@@ -1,5 +1,4 @@
-// src/components/Navbar/Navbar.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   AppBar,
   Toolbar,
@@ -15,33 +14,56 @@ import {
   Drawer,
   List,
   ListItem,
-  ListItemText,
   ListItemIcon,
+  ListItemText,
   Divider,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import LogoutIcon from "@mui/icons-material/Logout";
-import SettingsIcon from "@mui/icons-material/Settings";
-import ReportProblemIcon from "@mui/icons-material/ReportProblem";
+import {
+  Menu as MenuIcon,
+  AccountCircle,
+  Logout as LogoutIcon,
+  Settings as SettingsIcon,
+  Dashboard as DashboardIcon,
+  Notifications as NotificationsIcon,
+  Home as HomeIcon,
+  AddCircleOutline as AddCircleOutlineIcon,
+  ListAlt as ListAltIcon,
+  Map as MapIcon,
+  DarkMode as DarkModeIcon,
+  LightMode as LightModeIcon,
+} from "@mui/icons-material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ColorModeContext } from "../../theme/ThemeProvider/ThemeProvider";
 
 const pages = [
-  { name: "Home", path: "/" },
-  { name: "My Reports", path: "/my-reports" },
-  { name: "Submit Report", path: "/submit-report" },
+  { name: "Home", path: "/", icon: <HomeIcon /> },
+  { name: "My Reports", path: "/my-reports", icon: <ListAltIcon /> },
+  { name: "Submit Report", path: "/submit-report", icon: <AddCircleOutlineIcon /> },
+  { name: "Dashboard", path: "/dashboard", icon: <DashboardIcon /> },
+  { name: "Map View", path: "/map", icon: <MapIcon /> },
 ];
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { toggleColorMode } = useContext(ColorModeContext);
+  const [darkMode, setDarkMode] = useState(false);
 
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
+  const [notifications, setNotifications] = useState(3);
 
-  // Fetch pending report count dynamically
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  // Sync dark mode with localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("themeMode");
+    setDarkMode(saved === "dark");
+  }, []);
+
+  // Fetch pending reports
   useEffect(() => {
     const fetchPendingReports = async () => {
       try {
@@ -59,22 +81,21 @@ const Navbar = () => {
     fetchPendingReports();
   }, []);
 
-  // Profile menu handlers
   const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
   const handleCloseUserMenu = () => setAnchorElUser(null);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     navigate("/login");
     handleCloseUserMenu();
   };
 
-  // Mobile drawer
   const toggleDrawer = () => setMobileOpen(!mobileOpen);
 
   const drawer = (
-    <Box sx={{ width: 250 }} onClick={toggleDrawer}>
-      <Typography variant="h6" sx={{ m: 2, fontWeight: "bold" }}>
+    <Box sx={{ width: 260 }} onClick={toggleDrawer}>
+      <Typography variant="h6" sx={{ m: 2, fontWeight: 700, color: "primary.main" }}>
         iReporter
       </Typography>
       <Divider />
@@ -86,18 +107,19 @@ const Navbar = () => {
             component={Link}
             to={page.path}
             selected={location.pathname === page.path}
+            sx={{
+              borderRadius: 2,
+              mx: 1,
+              "&.Mui-selected": {
+                backgroundColor: "primary.main",
+                color: "white",
+                "& .MuiListItemIcon-root": { color: "white" },
+              },
+              "&:hover": { backgroundColor: "rgba(25,118,210,0.08)" },
+            }}
           >
-            {page.name === "My Reports" && pendingCount > 0 ? (
-              <Badge
-                badgeContent={pendingCount}
-                color="error"
-                sx={{ mr: 2 }}
-              >
-                <ListItemText primary={page.name} />
-              </Badge>
-            ) : (
-              <ListItemText primary={page.name} />
-            )}
+            <ListItemIcon sx={{ minWidth: 40 }}>{page.icon}</ListItemIcon>
+            <ListItemText primary={page.name} />
           </ListItem>
         ))}
       </List>
@@ -121,16 +143,18 @@ const Navbar = () => {
 
   return (
     <AppBar
-      position="static"
-      elevation={6}
+      position="sticky"
+      elevation={4}
       sx={{
-        backgroundColor: "#1976d2",
+        background: darkMode
+          ? "linear-gradient(90deg, #0d47a1, #1976d2)"
+          : "linear-gradient(90deg, #2196f3, #64b5f6)",
         px: 2,
         py: 0.5,
         transition: "0.3s ease-in-out",
       }}
     >
-      <Toolbar>
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         {/* Mobile menu */}
         <IconButton
           color="inherit"
@@ -141,16 +165,15 @@ const Navbar = () => {
           <MenuIcon />
         </IconButton>
 
-        {/* App Logo / Name */}
+        {/* Logo */}
         <Typography
           variant="h6"
           component={Link}
           to="/"
           sx={{
-            flexGrow: 1,
             textDecoration: "none",
-            color: "inherit",
-            fontWeight: "bold",
+            color: "white",
+            fontWeight: 700,
             letterSpacing: 1,
           }}
         >
@@ -169,12 +192,9 @@ const Navbar = () => {
                 mx: 1,
                 textTransform: "none",
                 fontWeight: location.pathname === page.path ? "bold" : 500,
-                fontSize: 16,
                 borderBottom:
-                  location.pathname === page.path ? "2px solid #fff" : "none",
-                "&:hover": {
-                  backgroundColor: "rgba(255,255,255,0.1)",
-                },
+                  location.pathname === page.path ? "2px solid #fff" : "2px solid transparent",
+                "&:hover": { borderBottom: "2px solid rgba(255,255,255,0.6)" },
               }}
             >
               {page.name === "My Reports" && pendingCount > 0 ? (
@@ -187,10 +207,29 @@ const Navbar = () => {
             </Button>
           ))}
 
-          {/* Profile dropdown */}
+          {/* Notifications */}
+          <IconButton color="inherit" sx={{ ml: 1 }}>
+            <Badge badgeContent={notifications} color="error">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+
+          {/* Theme toggle */}
+          <IconButton
+            color="inherit"
+            sx={{ ml: 1 }}
+            onClick={() => {
+              toggleColorMode();
+              setDarkMode(!darkMode);
+            }}
+          >
+            {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+          </IconButton>
+
+          {/* Profile */}
           <Tooltip title="Account settings">
             <IconButton onClick={handleOpenUserMenu} sx={{ ml: 2 }}>
-              <Avatar sx={{ bgcolor: "#fff", color: "#1976d2" }}>
+              <Avatar sx={{ bgcolor: "white", color: "primary.main" }}>
                 <AccountCircle />
               </Avatar>
             </IconButton>
@@ -202,6 +241,15 @@ const Navbar = () => {
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             transformOrigin={{ vertical: "top", horizontal: "right" }}
           >
+            <Box sx={{ px: 2, py: 1.5 }}>
+              <Typography variant="subtitle1" fontWeight={600}>
+                {user?.name || "User"}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {user?.email || ""}
+              </Typography>
+            </Box>
+            <Divider />
             <MenuItem onClick={() => navigate("/profile")}>
               <SettingsIcon sx={{ mr: 1 }} /> Profile
             </MenuItem>
@@ -211,7 +259,7 @@ const Navbar = () => {
           </Menu>
         </Box>
 
-        {/* Mobile drawer */}
+        {/* Mobile Drawer */}
         <Drawer anchor="left" open={mobileOpen} onClose={toggleDrawer}>
           {drawer}
         </Drawer>
